@@ -50,7 +50,7 @@ namespace ConsoleTestTask.Solutions
 
         private Shape CreateRhombus()
         {
-            return new Rhombus(InputHandler.GetDouble("Введите сторону ромба: "), InputHandler.GetFloat("Введите угол между сторонами ромба: "));
+            return new Rhombus(InputHandler.GetDouble("Введите сторону ромба: "), InputHandler.GetFloat("Введите угол между сторонами ромба (в градусах): "));
         }
 
         private void PrintShape(Shape shape)
