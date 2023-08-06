@@ -2,6 +2,9 @@
 {
     internal class InputHandler
     {
+        private const int MaxLengthPhone = 20;
+        private const int MaxLengthName = 80;
+
         public static double GetDouble(string message)
         {
             return DoubleConverter.GetValue(message, double.Parse);
@@ -18,17 +21,17 @@
 
         public static string GetStringNumbers(string message)
         {
-            return GetString(message, char.IsDigit, "Можно вводить только цифры.");
+            return GetString(message, char.IsDigit, String.Format($"Можно вводить только цифры, максимальная длина {MaxLengthPhone}."), MaxLengthPhone);
         }
 
         public static string GetStringLetters(string message)
         {
-            return GetString(message, char.IsLetter, "Можно вводить только буквы.");
+            return GetString(message, char.IsLetter, String.Format($"Можно вводить только буквы, максимальная длина {MaxLengthName}."), MaxLengthName);
         }
 
-        private static string GetString(string message, Func<char, bool> validation, string validationFailedMessage)
+        private static string GetString(string message, Func<char, bool> validation, string validationFailedMessage, int maxLength)
         {
-            return StringValidator.GetValueValidated(message, validation, validationFailedMessage);
+            return StringValidator.GetValueValidated(message, validation, validationFailedMessage, maxLength);
         }
 
         public static int GetMenuSelection(string[] messages)
@@ -115,14 +118,14 @@
             return GetValue(message, (a) => a);
         }
 
-        public static string GetValueValidated(string message, Func<char, bool> validation, string validationFailedMessage)
+        public static string GetValueValidated(string message, Func<char, bool> validation, string validationFailedMessage, int maxLength)
         {
             bool repeat = true;
             string value = null;
             do
             {
                 value = GetValue(message);
-                if (value != null && value.Length > 0 && value.All(validation))
+                if (value != null && value.Length > 0 && value.Length < maxLength && value.All(validation))
                 {
                     repeat = false;
                 }

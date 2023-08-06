@@ -32,28 +32,28 @@ namespace ConsoleTestTask.Solutions
             } while (repeat);
         }
 
-        private Shape CreateCircle()
+        private static Shape CreateCircle()
         {
             return new Circle(InputHandler.GetDouble("Введите радиус: "));
         }
 
-        private Shape CreateSquare()
+        private static Shape CreateSquare()
         {
             return new Square(InputHandler.GetDouble("Введите сторону квадрата: "));
         }
 
-        private Shape CreateRectangle()
+        private static Shape CreateRectangle()
         {
             return new Rectangle(InputHandler.GetDouble("Введите первую сторону прямоугольника: "),
                 InputHandler.GetDouble("Введите вторую сторону прямоугольника: "));
         }
 
-        private Shape CreateRhombus()
+        private static Shape CreateRhombus()
         {
             return new Rhombus(InputHandler.GetDouble("Введите сторону ромба: "), InputHandler.GetFloat("Введите угол между сторонами ромба (в градусах): "));
         }
 
-        private void PrintShape(Shape shape)
+        private static void PrintShape(Shape shape)
         {
             bool valid = shape.IsValid();
             Console.WriteLine($"Фигура возможна: {valid}");
