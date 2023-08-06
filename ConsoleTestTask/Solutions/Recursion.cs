@@ -26,7 +26,7 @@ namespace ConsoleTestTask.Solutions
             float number = InputHandler.GetFloat("Введите число (пример: 1,5): ");
             int power = InputHandler.GetInt("Введите целую степень: ");
 
-            float result = NumberInPower(number, Math.Abs(power));
+            double result = NumberInPower(number, Math.Abs(power));
             if (power < 0)
             {
                 result = 1 / result;
@@ -35,7 +35,7 @@ namespace ConsoleTestTask.Solutions
             Console.WriteLine($"Число {number} в степени {power}: {result}.");
             InputHandler.PauseForAnyKey();
         }
-        private static float NumberInPower(float number, int power)
+        private static double NumberInPower(float number, int power)
         {
             if (power == 1)
             {
