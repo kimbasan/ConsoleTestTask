@@ -25,8 +25,8 @@ public class Runner
                 case 2: Matrix.GetSumOfNumbersMultipleOfThree(); break;
                 case 3: Recursion.GetNumberFromFibonacchiSequence(); break;
                 case 4: Recursion.GetNumberInPower(); break;
-                case 5: new PhoneDictionary().Start(); break;
-                case 6: new Shapes().Start(); break;
+                case 5: PhoneDictionary().Start(); break;
+                case 6: Shapes.Start(); break;
                 case 7: repeat = false; break;
             }
         } while (repeat);

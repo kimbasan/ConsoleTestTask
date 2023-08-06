@@ -4,17 +4,12 @@ namespace ConsoleTestTask.Solutions
 {
     internal class PhoneDictionary
     {
-        Dictionary<Person, string> phoneBook = new Dictionary<Person, string>();
+        private static Dictionary<Person, string> phoneBook;
 
-        public PhoneDictionary()
+        public static void Start()
         {
-            phoneBook.Add(new Person("Иван", "Иванович", "Иванов"), "8029445511");
-            phoneBook.Add(new Person("Сергей", "Сергеевич", "Сергеев"), "802934356123");
-            phoneBook.Add(new Person("Петр", "Петрович", "Петров"), "802911231231");
-        }
+            PopulatePhoneBook();
 
-        public void Start()
-        {
             bool repeat = true;
             var menuItems = new string[] {
                 "1 - Вывести записи",
@@ -41,7 +36,17 @@ namespace ConsoleTestTask.Solutions
             } while (repeat);
         }
 
-        private void FindRecordByPerson()
+        private static void PopulatePhoneBook()
+        {
+            phoneBook = new Dictionary<Person, string>
+            {
+                { new Person("Иван", "Иванович", "Иванов"), "8029445511" },
+                { new Person("Сергей", "Сергеевич", "Сергеев"), "802934356123" },
+                { new Person("Петр", "Петрович", "Петров"), "802911231231" }
+            };
+        }
+
+        private static void FindRecordByPerson()
         {
             var person = CreatePersonFromInput();
             string result = null;
@@ -58,7 +63,7 @@ namespace ConsoleTestTask.Solutions
             InputHandler.PauseForAnyKey();
         }
 
-        private Person CreatePersonFromInput()
+        private static Person CreatePersonFromInput()
         {
             string firstName = InputHandler.GetStringLetters("Введите имя: ");
             string surname = InputHandler.GetStringLetters("Введите отчество: ");
@@ -66,7 +71,7 @@ namespace ConsoleTestTask.Solutions
             return new Person(firstName, surname, lastName);
         }
 
-        private void PrintBook()
+        private static void PrintBook()
         {
             Console.WriteLine("Справочник:");
             Console.WriteLine("______________________");
@@ -76,7 +81,7 @@ namespace ConsoleTestTask.Solutions
             }
             Console.WriteLine("______________________");
         }
-        private void AddRecord()
+        private static void AddRecord()
         {
             var newPerson = CreatePersonFromInput();
             string phone = InputHandler.GetStringNumbers("Введите телефон: ");
@@ -91,7 +96,7 @@ namespace ConsoleTestTask.Solutions
             InputHandler.PauseForAnyKey();
         }
 
-        private void DeleteRecord()
+        private static void DeleteRecord()
         {
             var searchPerson = CreatePersonFromInput();
             if (phoneBook.Remove(searchPerson))
@@ -105,7 +110,7 @@ namespace ConsoleTestTask.Solutions
             InputHandler.PauseForAnyKey();
         }
 
-        private void EditRecord()
+        private static void EditRecord()
         {
             var searchPerson = CreatePersonFromInput();
             string phoneNumber = null;

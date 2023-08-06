@@ -4,7 +4,7 @@ namespace ConsoleTestTask.Solutions
 {
     internal class Shapes
     {
-        public void Start()
+        public static void Start()
         {
             bool repeat = true;
             var menuItems = new string[] {
