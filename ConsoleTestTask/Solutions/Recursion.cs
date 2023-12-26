@@ -5,8 +5,6 @@ namespace ConsoleTestTask.Solutions
 {
     internal class Recursion
     {
-        private static readonly double FibonacchiA = (1 + Math.Sqrt(5)) / 2;
-        private static readonly double FibonacchiB = (1 - Math.Sqrt(5)) / 2;
         public static void GetNumberFromFibonacchiSequence()
         {
             int number = InputHandler.GetInt("Введите номер числа в последовательности: ", 0, int.MaxValue);
@@ -18,7 +16,14 @@ namespace ConsoleTestTask.Solutions
 
         private static BigInteger GetFibonacchiNumberByIndex(int index)
         {
-            return new BigInteger((Math.Pow(FibonacchiA, index) - Math.Pow(FibonacchiB, index)) / Math.Sqrt(5));
+            if (index == 0 || index == 1)
+            {
+                return index;
+            }
+            else
+            {
+                return GetFibonacchiNumberByIndex(index - 1) + GetFibonacchiNumberByIndex(index - 2);
+            }
         }
 
         public static void GetNumberInPower()
@@ -26,28 +31,24 @@ namespace ConsoleTestTask.Solutions
             float number = InputHandler.GetFloat("Введите число (пример: 1,5): ");
             int power = InputHandler.GetInt("Введите целую степень: ");
 
-            double result = NumberInPower(number, Math.Abs(power));
-            if (power < 0)
-            {
-                result = 1 / result;
-            }
+            double result = NumberInPower(number, power);
 
             Console.WriteLine($"Число {number} в степени {power}: {result}.");
             InputHandler.PauseForAnyKey();
         }
         private static double NumberInPower(float number, int power)
         {
-            if (power == 1)
-            {
-                return number;
-            }
-            else if (power == 0)
+            if (power == 0)
             {
                 return 1;
             }
-            else
+            else if (power > 0)
             {
                 return number * NumberInPower(number, power - 1);
+            }
+            else
+            {
+                return 1 / NumberInPower(number, -power);
             }
         }
     }

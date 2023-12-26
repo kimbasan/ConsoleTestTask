@@ -1,4 +1,6 @@
-﻿namespace ConsoleTestTask.Util
+﻿using System.Text.RegularExpressions;
+
+namespace ConsoleTestTask.Util
 {
     internal class InputHandler
     {
@@ -58,7 +60,7 @@
             T value = default;
             do
             {
-                Console.WriteLine(message);
+                Console.Write(message);
                 string stringValue = Console.ReadLine();
 
                 try

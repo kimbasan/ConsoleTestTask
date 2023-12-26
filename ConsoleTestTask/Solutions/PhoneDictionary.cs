@@ -4,7 +4,7 @@ namespace ConsoleTestTask.Solutions
 {
     internal class PhoneDictionary
     {
-        private static Dictionary<Person, string> phoneBook;
+        private static Dictionary<int, List<Person>> phoneBook;
 
         public static void Start()
         {
@@ -19,6 +19,7 @@ namespace ConsoleTestTask.Solutions
                 "5 - Найти запись по ФИО",
                 "6 - Выход"
             };
+
             do
             {
                 PrintBook();
@@ -29,47 +30,79 @@ namespace ConsoleTestTask.Solutions
                     case 2: AddRecord(); break;
                     case 3: EditRecord(); break;
                     case 4: DeleteRecord(); break;
-                    case 5: FindRecordByPerson(); break;
+                    case 5: FindByName(); break;
                     case 6: repeat = false; break;
                 }
-
             } while (repeat);
         }
 
         private static void PopulatePhoneBook()
         {
-            phoneBook = new Dictionary<Person, string>
-            {
-                { new Person("Иван", "Иванович", "Иванов"), "8029445511" },
-                { new Person("Сергей", "Сергеевич", "Сергеев"), "802934356123" },
-                { new Person("Петр", "Петрович", "Петров"), "802911231231" }
-            };
+            phoneBook = new Dictionary<int, List<Person>>();
+            AddOrUpdate(new Person("Иван Иванович Иванов", "8029445511"));
+            AddOrUpdate(new Person("Иван Иванович Иванов", "8453445711"));
+            AddOrUpdate(new Person("Сергей Сергеевич Сергеев", "802934356123"));
+            AddOrUpdate(new Person("Петр Петрович Петров", "802911231231"));
+            AddOrUpdate(new Person("Иванов Иванович Иван", "8786545511"));
         }
 
-        private static void FindRecordByPerson()
+        private static string GetNameFromInput()
         {
-            var person = CreatePersonFromInput();
-            string result = null;
+            string name = InputHandler.GetStringLetters("Введите имя:");
+            string middle = InputHandler.GetStringLetters("Введите отчество:");
+            string surname = InputHandler.GetStringLetters("Введите Фамилию: ");
+            return string.Format($"{name} {middle} {surname}");
+        }
 
-            if (phoneBook.TryGetValue(person, out result))
+        private static void FindByName()
+        {
+            string name = GetNameFromInput();
+            PrintSearch(name, FindPersonByName(name));
+        }
+
+        private static List<Person> FindPersonByName(string name)
+        {
+            List<Person> result = phoneBook[name.GetHashCode()];
+            return result.FindAll(person => person.GetName().Equals(name));
+        }
+
+        private static void PrintSearch(string name, List<Person> searchResults)
+        {
+            if (searchResults != null && searchResults.Count > 0)
             {
-                Console.WriteLine($"Для ФИО {person} Найден номер: {result}.");
-
+                Console.WriteLine($"Для ФИО {name} найдено:");
+                foreach (var person in searchResults)
+                {
+                    Console.WriteLine($"номер: {person.GetPhone()}");
+                }
             }
             else
             {
-                Console.WriteLine($"Для ФИО {person} номер не найден.");
+                Console.WriteLine($"Для ФИО {name} номер не найден.");
             }
             InputHandler.PauseForAnyKey();
         }
 
-        private static Person CreatePersonFromInput()
+        private static int SelectPerson(string name, List<Person> searchResults)
         {
-            string firstName = InputHandler.GetStringLetters("Введите имя: ");
-            string surname = InputHandler.GetStringLetters("Введите отчество: ");
-            string lastName = InputHandler.GetStringLetters("Введите фамилию: ");
-            return new Person(firstName, surname, lastName);
+            if (searchResults.Count == 1)
+            {
+                return 0;
+            }
+            else
+            {
+                Console.WriteLine($"Для ФИО {name} найдено:");
+                int i = 0;
+                foreach (var person in searchResults)
+                {
+                    Console.WriteLine($"{i} - {person.GetName()} номер: {person.GetPhone()}");
+                    i++;
+                }
+                int select = InputHandler.GetInt("Выберите запись: ", 0, i - 1);
+                return select;
+            }
         }
+
 
         private static void PrintBook()
         {
@@ -77,31 +110,41 @@ namespace ConsoleTestTask.Solutions
             Console.WriteLine("______________________");
             foreach (var pair in phoneBook)
             {
-                Console.WriteLine($"|{pair.Key}: {pair.Value}|");
+                foreach (var person in pair.Value)
+                {
+                    Console.WriteLine($"|{person.GetName()}: {person.GetPhone()}|");
+                }
             }
             Console.WriteLine("______________________");
         }
         private static void AddRecord()
         {
-            var newPerson = CreatePersonFromInput();
+            string newName = GetNameFromInput();
             string phone = InputHandler.GetStringNumbers("Введите телефон: ");
-            if (phoneBook.TryAdd(newPerson, phone))
-            {
-                Console.WriteLine("Запись добавлена.");
-            }
-            else
-            {
-                Console.WriteLine("Для данной ФИО уже есть запись.");
-            }
+            AddOrUpdate(new Person(newName, phone));
+            Console.WriteLine("Запись добавлена.");
+
             InputHandler.PauseForAnyKey();
         }
 
         private static void DeleteRecord()
         {
-            var searchPerson = CreatePersonFromInput();
-            if (phoneBook.Remove(searchPerson))
+            string name = GetNameFromInput();
+            List<Person> dictionaryList = phoneBook[name.GetHashCode()];
+            if (dictionaryList != null && dictionaryList.Count > 0)
             {
-                Console.WriteLine("Запись удалена.");
+                List<Person> searchResult = FindPersonByName(name);
+                if (searchResult.Count > 0)
+                {
+                    int personToDelete = SelectPerson(name, searchResult);
+                    dictionaryList.RemoveAt(personToDelete);
+                    phoneBook[name.GetHashCode()] = dictionaryList;
+                    Console.WriteLine("Запись удалена.");
+                }
+                else
+                {
+                    Console.WriteLine("Для введенной ФИО запись не найдена.");
+                }
             }
             else
             {
@@ -112,14 +155,25 @@ namespace ConsoleTestTask.Solutions
 
         private static void EditRecord()
         {
-            var searchPerson = CreatePersonFromInput();
-            string phoneNumber = null;
-            if (phoneBook.TryGetValue(searchPerson, out phoneNumber) && phoneNumber != null) 
+            string name = GetNameFromInput();
+            List<Person> dictionaryList = phoneBook[name.GetHashCode()];
+            if (dictionaryList != null && dictionaryList.Count > 0)
             {
-                Console.WriteLine($"Текущий номер телефона: {phoneNumber}");
-                var newNumber = InputHandler.GetStringNumbers("Введите новый номер телефона: ");
-                phoneBook[searchPerson] = newNumber;
-                Console.WriteLine("Запись обновлена.");
+                List<Person> searchResult = FindPersonByName(name);
+                if (searchResult.Count > 0)
+                {
+                    int personToEdit = SelectPerson(name, searchResult);
+
+                    Console.WriteLine($"Текущий номер телефона: {searchResult[personToEdit].GetPhone()}");
+                    var newNumber = InputHandler.GetStringNumbers("Введите новый номер телефона: ");
+                    searchResult[personToEdit].SetPhoneNumber(newNumber);
+
+                    Console.WriteLine("Запись изменена.");
+                }
+                else
+                {
+                    Console.WriteLine("Для введенной ФИО запись не найдена.");
+                }
             }
             else
             {
@@ -127,52 +181,68 @@ namespace ConsoleTestTask.Solutions
             }
             InputHandler.PauseForAnyKey();
         }
+
+        private static void AddOrUpdate(Person person)
+        {
+            var hash = person.GetName().GetHashCode();
+            if (phoneBook.ContainsKey(hash))
+            {
+                phoneBook[hash].Add(person);
+            }
+            else
+            {
+                phoneBook.Add(hash, new List<Person> { person });
+            }
+        }
     }
 
     internal class Person
     {
-        private string firstName;
-        private string surname;
-        private string lastName;
+        private string name;
 
-        public Person(string firstName, string surname, string lastName)
+        private string phoneNumber;
+
+        public Person(string name, string phone)
         {
-            this.firstName = firstName;
-            this.surname = surname;
-            this.lastName = lastName;
+            this.name = name;
+            this.phoneNumber = phone;
         }
 
-        public void SetFirstName(string newFirstName)
+        public string GetName()
         {
-            firstName = newFirstName;
+            return name;
         }
 
-        public void SetSurname(string newSurname)
+        public void SetName(string name)
         {
-            surname = newSurname;
+            this.name = name;
         }
 
-        public void SetLastName(string newLastName)
+        public string GetPhone()
         {
-            lastName = newLastName;
+            return phoneNumber;
+        }
+
+        public void SetPhoneNumber(string phone)
+        {
+            phoneNumber = phone;
         }
 
         public override bool Equals(object? obj)
         {
             return obj is Person person &&
-                   firstName == person.firstName &&
-                   surname == person.surname &&
-                   lastName == person.lastName;
+                   name == person.name &&
+                   phoneNumber == person.phoneNumber;
         }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(firstName, surname, lastName);
+            return HashCode.Combine(name, phoneNumber);
         }
 
         public override string ToString()
         {
-            return string.Format($"{firstName} {surname} {lastName}");
+            return string.Format($"{name} {phoneNumber}");
         }
     }
 }
