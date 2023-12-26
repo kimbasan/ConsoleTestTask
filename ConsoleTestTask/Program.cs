@@ -1,7 +1,7 @@
 ﻿using ConsoleTestTask.Solutions;
 using ConsoleTestTask.Util;
 
-public class Runner
+public class Program
 {
     public static void Main(String[] args)
     {
